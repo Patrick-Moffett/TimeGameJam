@@ -105,7 +105,7 @@ void URewindComponent::Rewind()
 	float playbackRate = RewindTimeline.GetTimelineLength() / ((RewindStates.Num() - 1) * DeltaRecordTime);
 	
 	//Boost the speed if true
-	if (bIsRewindSpeedBoosted){playbackRate = playbackRate * 5;}
+	if (bIsRewindSpeedBoosted){playbackRate = playbackRate * RewindBoostMultiplier;}
 	//set playback speed
 	RewindTimeline.SetPlayRate(playbackRate);
 
@@ -131,7 +131,7 @@ void URewindComponent::BoostRewind()
 	}
 	if (RewindTimeline.IsPlaying())
 	{
-		RewindTimeline.SetPlayRate(RewindTimeline.GetPlayRate() * 5);
+		RewindTimeline.SetPlayRate(RewindTimeline.GetPlayRate() * RewindBoostMultiplier);
 	}
 	bIsRewindSpeedBoosted = true;
 }
@@ -145,11 +145,13 @@ void URewindComponent::UnBoostRewind()
 	}
 	if (RewindTimeline.IsPlaying())
 	{
-		RewindTimeline.SetPlayRate(RewindTimeline.GetPlayRate()/ 5);
+		RewindTimeline.SetPlayRate(RewindTimeline.GetPlayRate()/ RewindBoostMultiplier);
 	}
 	bIsRewindSpeedBoosted = false;
 }
-
+/*
+Toggle Rewind Speed
+*/
 void URewindComponent::ToggleBoostRewindSpeed()
 {
 	if (bIsRewindSpeedBoosted)
