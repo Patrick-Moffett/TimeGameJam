@@ -16,7 +16,7 @@ struct FRewindStateInfoStruct
 	GENERATED_BODY()
 	
 	FRewindStateInfoStruct(){}
-	FRewindStateInfoStruct(FVector Location, FRotator Rotation, FVector Velocity, FVector AngularVelocity)
+	FRewindStateInfoStruct(FVector Location, FQuat Rotation, FVector Velocity, FVector AngularVelocity)
 	{
 		this->Location = Location;
 		this->Rotation = Rotation;
@@ -28,7 +28,7 @@ struct FRewindStateInfoStruct
 	FVector Location;
 
 	UPROPERTY()
-	FRotator Rotation;
+	FQuat Rotation;
 
 	UPROPERTY()
 	FVector Velocity;
@@ -64,15 +64,42 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void StopRewind();
 
+	UFUNCTION(BlueprintCallable)
+	void BoostRewind();
+
+	UFUNCTION(BlueprintCallable)
+	void UnBoostRewind();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleBoostRewindSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	void FreezeTime();
+
+	UFUNCTION(BlueprintCallable)
+	void UnFreezeTime();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleFreezeTime();
+
 	UFUNCTION()
 	void RewindTimelineUpdate(float value);
 
 	UFUNCTION()
 	void RewindTimelineFinished();
 
+	UFUNCTION()
+	void RewindTimelineInterrupted(float interruptedFrame);
+
+	UFUNCTION()
+	void RewindTimelineRestartMesh();
+
+
+
+
 	FTimeline RewindTimeline;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(Category= "Setup", EditDefaultsOnly)
 	class UCurveFloat* Curve;
 
 	UPROPERTY()
@@ -91,10 +118,6 @@ protected:
 
 	UPROPERTY()
 	FTimerHandle RecordStateTimerHandle;
-
-
-	UPROPERTY()
-	bool bShouldRecordState = true;
 
 	UPROPERTY()
 	bool bShouldRewindStop = false;
