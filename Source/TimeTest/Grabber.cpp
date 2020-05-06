@@ -52,12 +52,15 @@ void UGrabber::Grab()
 
 	if (HitResult.GetActor())
 	{
-		PhysicsHandle->GrabComponentAtLocation
+
+		PhysicsHandle->GrabComponentAtLocationWithRotation
 		(
 			ComponentToGrab,
 			NAME_None,
-			GetPlayersReach()
+			GetPlayersReach(),
+			FRotator(0.f,0.f,0.f)
 		);
+
 	}
 }
 
@@ -77,6 +80,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		PhysicsHandle->SetTargetLocation(GetPlayersReach());
 	}
+
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
