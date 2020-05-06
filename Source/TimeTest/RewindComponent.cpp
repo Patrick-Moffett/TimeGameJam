@@ -15,6 +15,17 @@ URewindComponent::URewindComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	//Setup Curve
+	Curve = CreateDefaultSubobject<UCurveFloat>(FName("CurveFloat"));
+	Curve->FloatCurve.AddKey(0.0f, 0.0f);
+	Curve->FloatCurve.AddKey(1.0f, 1.0f);
+
+	//Setup Timeline Component
+	RewindTimeline.SetTimelineLength(1.0f);
+	TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
+	TimelineEndedFunction.BindUFunction(this, FName("RewindTimelineFinished"));
+	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
+	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 }
 
 
@@ -55,13 +66,6 @@ void URewindComponent::BeginPlay()
 			&URewindComponent::RecordRewindState,
 			DeltaRecordTime,
 			true);
-
-		//Setup Timeline Component
-		RewindTimeline.SetTimelineLength(1.0f);
-		TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
-		TimelineEndedFunction.BindUFunction(this, FName("RewindTimelineFinished"));
-		RewindTimeline.AddInterpFloat(Curve,TimelineUpdateFunction);
-		RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 
 	}
 	else

@@ -99,8 +99,8 @@ protected:
 
 	FTimeline RewindTimeline;
 
-	UPROPERTY(Category= "Setup", EditDefaultsOnly)
-	class UCurveFloat* Curve;
+	UPROPERTY()
+	class UCurveFloat *Curve;
 
 	UPROPERTY()
 	FOnTimelineFloat TimelineUpdateFunction;
