@@ -100,11 +100,11 @@ protected:
 
 
 
-
-	FTimeline RewindTimeline;
-
 	UPROPERTY()
-	class UCurveFloat *Curve;
+	FTimeline RewindTimeline;
+	
+	UPROPERTY()
+	UCurveFloat *Curve;
 
 	UPROPERTY()
 	FOnTimelineFloat TimelineUpdateFunction;

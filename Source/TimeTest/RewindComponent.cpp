@@ -22,12 +22,8 @@ URewindComponent::URewindComponent()
 	Curve->FloatCurve.AddKey(0.0f, 0.0f);
 	Curve->FloatCurve.AddKey(1.0f, 1.0f);
 
-	//Setup Timeline Component
-	RewindTimeline.SetTimelineLength(1.0f);
-	TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
-	TimelineEndedFunction.BindUFunction(this, FName("RewindTimelineFinished"));
-	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
-	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
+
+
 }
 
 // Called when the game starts
@@ -35,7 +31,20 @@ void URewindComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Setup Timeline Component
+	RewindTimeline.SetTimelineLength(1.0f);
+	TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
+	TimelineEndedFunction.BindUFunction(this, FName("RewindTimelineFinished"));
+	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
+	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
+
 	ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
+
+	InitialState = FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
+		ActorComponentMesh->GetComponentRotation().Quaternion(),
+		ActorComponentMesh->GetComponentVelocity(),
+		ActorComponentMesh->GetPhysicsAngularVelocityInDegrees());
+
 	if (ActorComponentMesh->IsSimulatingPhysics())
 	{
 		bActorSimulatePhysics = true;
@@ -49,6 +58,9 @@ void URewindComponent::BeginPlay()
 			true);
 
 		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->ToggleFreezeDelegate.AddDynamic(this, &URewindComponent::ToggleFreezeTime);
+		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->ToggleRewindSpeedDelegate.AddDynamic(this, &URewindComponent::ToggleBoostRewindSpeed);
+		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->RewindTimeDelegate.AddDynamic(this, &URewindComponent::Rewind);
+		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->StopRewindTimeDelegate.AddDynamic(this, &URewindComponent::StopRewind);
 
 }
 void URewindComponent::SetMeshReference(UStaticMeshComponent* StaticMesh)
@@ -86,9 +98,9 @@ void URewindComponent::Rewind()
 		ActorComponentMesh->SetSimulatePhysics(false);
 	}
 	
-	//find the playbackrate so that it plays back at 1x speed
-	float playbackRate = RewindTimeline.GetTimelineLength() / ((RewindStates.Num() - 1) * DeltaRecordTime);
-	
+	//RewindTimeline.GetTimelineLength()
+	float playbackRate = 1.f/ ((RewindStates.Num() - 1) * DeltaRecordTime);
+
 	//Boost the speed if true
 	if (bIsRewindSpeedBoosted){playbackRate = playbackRate * RewindBoostMultiplier;}
 	//set playback speed

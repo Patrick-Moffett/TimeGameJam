@@ -9,6 +9,10 @@
 class UInputComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FToggleFreezeTimeDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FToggleRewindSpeedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRewindTimeDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStopRewindTimeDelegate);
+
 
 UCLASS(config=Game)
 class ATimeTestCharacter : public ACharacter
@@ -57,6 +61,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FToggleFreezeTimeDelegate ToggleFreezeDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FToggleFreezeTimeDelegate ToggleRewindSpeedDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FToggleFreezeTimeDelegate RewindTimeDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FToggleFreezeTimeDelegate StopRewindTimeDelegate;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -92,8 +102,13 @@ protected:
 	void OnFire();
 
 	/*Toggles freezing time for other objects*/
-	UFUNCTION(BlueprintCallable)
 	void OnToggleFreeze();
+
+	void Rewind();
+
+	void StopRewind();
+
+	void ToggleRewindSpeed();
 
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();

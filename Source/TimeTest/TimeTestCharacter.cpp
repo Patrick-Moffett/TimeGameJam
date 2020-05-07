@@ -138,6 +138,12 @@ void ATimeTestCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATimeTestCharacter::LookUpAtRate);
 
+	//bind time controls
+	PlayerInputComponent->BindAction("FreezeTime", IE_Pressed, this, &ATimeTestCharacter::OnToggleFreeze);
+	PlayerInputComponent->BindAction("BoostRewind", IE_Pressed, this, &ATimeTestCharacter::ToggleRewindSpeed);
+	PlayerInputComponent->BindAction("Rewind", IE_Pressed, this, &ATimeTestCharacter::Rewind);
+	PlayerInputComponent->BindAction("Rewind", IE_Released, this, &ATimeTestCharacter::StopRewind);
+
 }
 
 void ATimeTestCharacter::OnFire()
@@ -191,6 +197,21 @@ void ATimeTestCharacter::OnFire()
 void ATimeTestCharacter::OnToggleFreeze()
 {
 	ToggleFreezeDelegate.Broadcast();
+}
+
+void ATimeTestCharacter::Rewind()
+{
+	RewindTimeDelegate.Broadcast();
+}
+
+void ATimeTestCharacter::StopRewind()
+{
+	StopRewindTimeDelegate.Broadcast();
+}
+
+void ATimeTestCharacter::ToggleRewindSpeed()
+{
+	ToggleRewindSpeedDelegate.Broadcast();
 }
 
 void ATimeTestCharacter::OnResetVR()
