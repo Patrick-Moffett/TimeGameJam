@@ -141,6 +141,7 @@ void ATimeTestCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	//bind time controls
 	PlayerInputComponent->BindAction("FreezeTime", IE_Pressed, this, &ATimeTestCharacter::OnToggleFreeze);
 	PlayerInputComponent->BindAction("BoostRewind", IE_Pressed, this, &ATimeTestCharacter::ToggleRewindSpeed);
+	PlayerInputComponent->BindAction("BoostRewind", IE_Released, this, &ATimeTestCharacter::ToggleRewindSpeed);
 	PlayerInputComponent->BindAction("Rewind", IE_Pressed, this, &ATimeTestCharacter::Rewind);
 	PlayerInputComponent->BindAction("Rewind", IE_Released, this, &ATimeTestCharacter::StopRewind);
 
