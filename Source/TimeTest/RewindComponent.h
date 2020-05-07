@@ -39,6 +39,7 @@ struct FRewindStateInfoStruct
 };
 
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TIMETEST_API URewindComponent : public UActorComponent
 {
@@ -48,8 +49,11 @@ public:
 	// Sets default values for this component's properties
 	URewindComponent();
 
-	UFUNCTION(BlueprintCallable)
-	void SetMeshReference(UStaticMeshComponent* StaticMeshComponent);
+	UPROPERTY()
+	UStaticMeshComponent* ActorComponentMesh;
+
+	UFUNCTION()
+	void SetMeshReference(UStaticMeshComponent* StaticMesh);
 
 protected:
 	// Called when the game starts
@@ -114,9 +118,6 @@ protected:
 	FRewindStateInfoStruct InitialState;
 
 	UPROPERTY()
-	UStaticMeshComponent* ActorComponentMesh;
-
-	UPROPERTY()
 	FTimerHandle RecordStateTimerHandle;
 
 	UPROPERTY()
@@ -136,7 +137,6 @@ protected:
 
 	UPROPERTY(Category = "Setup", EditDefaultsOnly)
 	float RewindBoostMultiplier =  5.0f;
-
 
 
 

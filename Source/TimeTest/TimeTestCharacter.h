@@ -8,6 +8,8 @@
 
 class UInputComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FToggleFreezeTimeDelegate);
+
 UCLASS(config=Game)
 class ATimeTestCharacter : public ACharacter
 {
@@ -52,6 +54,10 @@ protected:
 	virtual void BeginPlay();
 
 public:
+
+	UPROPERTY(BlueprintAssignable)
+	FToggleFreezeTimeDelegate ToggleFreezeDelegate;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -84,6 +90,10 @@ protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
+
+	/*Toggles freezing time for other objects*/
+	UFUNCTION(BlueprintCallable)
+	void OnToggleFreeze();
 
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();

@@ -103,6 +103,7 @@ void ATimeTestCharacter::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,6 +137,7 @@ void ATimeTestCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("TurnRate", this, &ATimeTestCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATimeTestCharacter::LookUpAtRate);
+
 }
 
 void ATimeTestCharacter::OnFire()
@@ -184,6 +186,11 @@ void ATimeTestCharacter::OnFire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+}
+
+void ATimeTestCharacter::OnToggleFreeze()
+{
+	ToggleFreezeDelegate.Broadcast();
 }
 
 void ATimeTestCharacter::OnResetVR()

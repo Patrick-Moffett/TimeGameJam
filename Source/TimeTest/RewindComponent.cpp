@@ -4,6 +4,8 @@
 #include "RewindComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h" 
+#include "TimeTestCharacter.h"
+#include "GameFramework/PlayerController.h" 
 #include "TimerManager.h"
 
 
@@ -28,37 +30,16 @@ URewindComponent::URewindComponent()
 	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 }
 
-
-void URewindComponent::SetMeshReference(UStaticMeshComponent* StaticMeshComponent)
-{
-	//Setup staticMesh reference and bool indicating if it usually simulates physics
-	ActorComponentMesh = StaticMeshComponent;
-	if (ActorComponentMesh->IsSimulatingPhysics())
-	{
-		bActorSimulatePhysics = true;
-	}
-	else
-	{
-		bActorSimulatePhysics = false;
-	}
-}
-
 // Called when the game starts
 void URewindComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ActorComponentMesh)
+	ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
+	if (ActorComponentMesh->IsSimulatingPhysics())
 	{
-		//Set Initial State based on initial position
-		InitialState = FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
-			ActorComponentMesh->GetComponentRotation().Quaternion(),
-			ActorComponentMesh->GetComponentVelocity(),
-			ActorComponentMesh->GetPhysicsAngularVelocityInDegrees());
-
-		//add initial state to Rewind States
-		RewindStates.Add(InitialState);
-
+		bActorSimulatePhysics = true;
+	}
 		//Setup Timer To Record States
 		GetWorld()->GetTimerManager().SetTimer(
 			RecordStateTimerHandle,
@@ -67,12 +48,12 @@ void URewindComponent::BeginPlay()
 			DeltaRecordTime,
 			true);
 
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("NO MESH ASSIGNED TO REWIND COMPONENT"))
-	}
+		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->ToggleFreezeDelegate.AddDynamic(this, &URewindComponent::ToggleFreezeTime);
 
+}
+void URewindComponent::SetMeshReference(UStaticMeshComponent* StaticMesh)
+{
+	ActorComponentMesh = StaticMesh;
 }
 /*
 Records the current state of the object into RewindStates
@@ -209,7 +190,7 @@ void URewindComponent::UnFreezeTime()
 	{
 		ActorComponentMesh->SetSimulatePhysics(true);
 		ActorComponentMesh->SetPhysicsLinearVelocity(RewindStates.Last().Velocity);
-		ActorComponentMesh->SetPhysicsAngularVelocity(RewindStates.Last().AngularVelocity);
+		ActorComponentMesh->SetPhysicsAngularVelocityInDegrees(RewindStates.Last().AngularVelocity);
 	}
 	//set bool to false
 	bIsActorFrozen = false;
@@ -306,7 +287,7 @@ void URewindComponent::RewindTimelineRestartMesh()
 		{
 			ActorComponentMesh->SetSimulatePhysics(true);
 			ActorComponentMesh->SetPhysicsLinearVelocity(RewindStates.Last().Velocity);
-			ActorComponentMesh->SetPhysicsAngularVelocity(RewindStates.Last().AngularVelocity);
+			ActorComponentMesh->SetPhysicsAngularVelocityInDegrees(RewindStates.Last().AngularVelocity);
 		}
 		//unpause timer function to record new states
 		GetWorld()->GetTimerManager().UnPauseTimer(RecordStateTimerHandle);
