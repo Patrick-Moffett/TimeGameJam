@@ -61,6 +61,7 @@ void UGrabber::Grab()
 			GetPlayersReach(),
 			FRotator (0.f, 0.f, 0.f)
 		);
+		ActorHit->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	}
 }
 
@@ -68,7 +69,12 @@ void UGrabber::Grab()
 void UGrabber::Release()
 {
 	if (!PhysicsHandle) { return; }
-	PhysicsHandle->ReleaseComponent();
+	auto grabbedComponent = PhysicsHandle->GetGrabbedComponent();
+	if (grabbedComponent)
+	{
+		PhysicsHandle->GetGrabbedComponent()->GetOwner()->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		PhysicsHandle->ReleaseComponent();
+	}
 }
 
 // Called every frame
