@@ -20,15 +20,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:	
 	UPROPERTY(VisibleDefaultsOnly)
 	class UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	class URewindComponent* RewindComponent;
-
-
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

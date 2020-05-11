@@ -84,6 +84,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class ATimeTestProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<class ATimeTestFreezeProjectile> FreezingProjectileClass;
+
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	class USoundBase* FireSound;
@@ -100,6 +103,8 @@ protected:
 	
 	/** Fires a projectile. */
 	void OnFire();
+
+	void OnFireFreezeProjectile();
 
 	/*Toggles freezing time for other objects*/
 	void OnToggleFreeze();

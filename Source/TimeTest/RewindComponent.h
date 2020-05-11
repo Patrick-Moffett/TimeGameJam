@@ -60,33 +60,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void RecordRewindState();
-
-	UFUNCTION(BlueprintCallable)
-	void Rewind();
-
-	UFUNCTION(BlueprintCallable)
-	void StopRewind();
-
-	UFUNCTION(BlueprintCallable)
-	void BoostRewind();
-
-	UFUNCTION(BlueprintCallable)
-	void UnBoostRewind();
-
-	UFUNCTION(BlueprintCallable)
-	void ToggleBoostRewindSpeed();
-
-	UFUNCTION(BlueprintCallable)
-	void FreezeTime();
-
-	UFUNCTION(BlueprintCallable)
-	void UnFreezeTime();
-
-	UFUNCTION(BlueprintCallable)
-	void ToggleFreezeTime();
-
-	UFUNCTION()
 	void RewindTimelineUpdate(float value);
 
 	UFUNCTION()
@@ -94,11 +67,6 @@ protected:
 
 	UFUNCTION()
 	void RewindTimelineInterrupted(float interruptedFrame);
-
-	UFUNCTION()
-	void RewindTimelineRestartMesh();
-
-
 
 	UPROPERTY()
 	FTimeline RewindTimeline;
@@ -142,6 +110,37 @@ protected:
 
 
 public:	
+	UFUNCTION()
+	void RecordRewindState();
+
+	UFUNCTION(BlueprintCallable)
+	void Rewind();
+
+	UFUNCTION(BlueprintCallable)
+	void StopRewind();
+
+	UFUNCTION(BlueprintCallable)
+	void BoostRewind();
+
+	UFUNCTION(BlueprintCallable)
+	void UnBoostRewind();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleBoostRewindSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	void FreezeTime();
+
+	UFUNCTION(BlueprintCallable)
+	void UnFreezeTime();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleFreezeTime();
+
+
+
+	UFUNCTION()
+	void RewindTimelineRestartMesh();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

@@ -72,10 +72,17 @@ Records the current state of the object into RewindStates
 */
 void URewindComponent::RecordRewindState()
 {
-		RewindStates.Add(FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
-		ActorComponentMesh->GetComponentRotation().Quaternion(),
-		ActorComponentMesh->GetComponentVelocity(),
-		ActorComponentMesh->GetPhysicsAngularVelocityInDegrees()));
+	//Uncomment this to record only new states
+	//if (ActorComponentMesh->GetComponentVelocity().IsZero() &&
+	//	ActorComponentMesh->GetPhysicsAngularVelocityInDegrees().IsZero())
+	//{
+	//	return;
+	//}
+
+	RewindStates.Add(FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
+											ActorComponentMesh->GetComponentRotation().Quaternion(),
+											ActorComponentMesh->GetComponentVelocity(),
+											ActorComponentMesh->GetPhysicsAngularVelocityInDegrees()));
 }
 /*
 Does all the Initializing of values in order to rewind the object, and then starts RewindTimeline
