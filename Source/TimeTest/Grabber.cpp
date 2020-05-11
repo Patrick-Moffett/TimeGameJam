@@ -30,8 +30,7 @@ void UGrabber::SetupInputComponent()
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
-		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::ToggleGrab);
 	}
 }
 void UGrabber::FindPhysicsHandle()
@@ -74,6 +73,22 @@ void UGrabber::Release()
 	{
 		PhysicsHandle->GetGrabbedComponent()->GetOwner()->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		PhysicsHandle->ReleaseComponent();
+	}
+}
+
+void UGrabber::ToggleGrab()
+{
+	if (PhysicsHandle)
+	{
+		auto Component = PhysicsHandle->GetGrabbedComponent();
+		if (Component)
+		{
+			Release();
+		}
+		else
+		{
+			Grab();
+		}
 	}
 }
 

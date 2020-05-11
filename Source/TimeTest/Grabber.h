@@ -38,6 +38,7 @@ private:
 
 	void Grab();
 	void Release();
+	void ToggleGrab();
 	void FindPhysicsHandle();
 	void SetupInputComponent();
 
