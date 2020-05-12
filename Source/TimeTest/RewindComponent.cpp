@@ -39,9 +39,10 @@ void URewindComponent::BeginPlay()
 	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
 	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 
+	//Setup ActorMesh
+	ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
 	if (ActorComponentMesh)
 	{
-		ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
 			InitialState = FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
 			ActorComponentMesh->GetComponentRotation().Quaternion(),
 			ActorComponentMesh->GetComponentVelocity(),
