@@ -95,9 +95,6 @@ protected:
 	bool bIsRewindSpeedBoosted = false;
 
 	UPROPERTY()
-	bool bIsActorFrozen = false;
-
-	UPROPERTY()
 	bool bActorSimulatePhysics;
 
 	UPROPERTY(Category = "Setup", EditDefaultsOnly)
@@ -137,12 +134,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleFreezeTime();
 
-
-
 	UFUNCTION()
 	void RewindTimelineRestartMesh();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	UPROPERTY()
+	bool bIsActorFrozen = false;
 };

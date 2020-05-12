@@ -3,6 +3,7 @@
 #include "Grabber.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
+#include "RewindableActor.h"
 #include "GameFramework/PlayerController.h"
 
 #define OUT
@@ -45,6 +46,8 @@ void UGrabber::FindPhysicsHandle()
 // input function
 void UGrabber::Grab()
 {
+	if (!PhysicsHandle) { return; }
+
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
 
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
@@ -52,7 +55,11 @@ void UGrabber::Grab()
 
 	if (ActorHit)
 	{
-		if (!PhysicsHandle) { return; }
+		auto RewindActor = Cast<ARewindableActor>(ActorHit);
+		if (RewindActor)
+		{
+			RewindActor->StaticMeshComponent->SetSimulatePhysics(true);
+		}
 		PhysicsHandle->GrabComponentAtLocationWithRotation
 		(
 			ComponentToGrab,
@@ -71,7 +78,13 @@ void UGrabber::Release()
 	auto grabbedComponent = PhysicsHandle->GetGrabbedComponent();
 	if (grabbedComponent)
 	{
-		PhysicsHandle->GetGrabbedComponent()->GetOwner()->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		auto HeldActor = grabbedComponent->GetOwner();
+		HeldActor->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		auto RewindActor = Cast<ARewindableActor>(HeldActor);
+		if (RewindActor && RewindActor->RewindComponent->bIsActorFrozen)
+		{
+			RewindActor->StaticMeshComponent->SetSimulatePhysics(false);
+		}
 		PhysicsHandle->ReleaseComponent();
 	}
 }
