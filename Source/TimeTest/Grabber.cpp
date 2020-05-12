@@ -78,17 +78,16 @@ void UGrabber::Release()
 
 void UGrabber::ToggleGrab()
 {
-	if (PhysicsHandle)
+	if (!PhysicsHandle) { return; }
+
+	auto Component = PhysicsHandle->GetGrabbedComponent();
+	if (Component)
 	{
-		auto Component = PhysicsHandle->GetGrabbedComponent();
-		if (Component)
-		{
-			Release();
-		}
-		else
-		{
-			Grab();
-		}
+		Release();
+	}
+	else
+	{
+		Grab();
 	}
 }
 

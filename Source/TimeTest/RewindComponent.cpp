@@ -31,6 +31,7 @@ void URewindComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	//Setup Timeline Component
 	RewindTimeline.SetTimelineLength(1.0f);
 	TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
@@ -38,30 +39,35 @@ void URewindComponent::BeginPlay()
 	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
 	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 
-	ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
-
-	InitialState = FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
-		ActorComponentMesh->GetComponentRotation().Quaternion(),
-		ActorComponentMesh->GetComponentVelocity(),
-		ActorComponentMesh->GetPhysicsAngularVelocityInDegrees());
-
-	if (ActorComponentMesh->IsSimulatingPhysics())
+	if (ActorComponentMesh)
 	{
-		bActorSimulatePhysics = true;
+		ActorComponentMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
+			InitialState = FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
+			ActorComponentMesh->GetComponentRotation().Quaternion(),
+			ActorComponentMesh->GetComponentVelocity(),
+			ActorComponentMesh->GetPhysicsAngularVelocityInDegrees());
+
+		if (ActorComponentMesh->IsSimulatingPhysics())
+		{
+			bActorSimulatePhysics = true;
+		}
 	}
-		//Setup Timer To Record States
-		GetWorld()->GetTimerManager().SetTimer(
+
+	//Setup Timer To Record States
+	GetWorld()->GetTimerManager().SetTimer(
 			RecordStateTimerHandle,
 			this,
 			&URewindComponent::RecordRewindState,
 			DeltaRecordTime,
 			true);
-
-		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->ToggleFreezeDelegate.AddDynamic(this, &URewindComponent::ToggleFreezeTime);
-		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->ToggleRewindSpeedDelegate.AddDynamic(this, &URewindComponent::ToggleBoostRewindSpeed);
-		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->RewindTimeDelegate.AddDynamic(this, &URewindComponent::Rewind);
-		Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->StopRewindTimeDelegate.AddDynamic(this, &URewindComponent::StopRewind);
-
+	auto Player = Cast<ATimeTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (Player)
+	{
+		Player->ToggleFreezeDelegate.AddDynamic(this, &URewindComponent::ToggleFreezeTime);
+		Player->ToggleRewindSpeedDelegate.AddDynamic(this, &URewindComponent::ToggleBoostRewindSpeed);
+		Player->RewindTimeDelegate.AddDynamic(this, &URewindComponent::Rewind);
+		Player->StopRewindTimeDelegate.AddDynamic(this, &URewindComponent::StopRewind);
+	}
 }
 void URewindComponent::SetMeshReference(UStaticMeshComponent* StaticMesh)
 {
@@ -78,7 +84,7 @@ void URewindComponent::RecordRewindState()
 	//{
 	//	return;
 	//}
-
+	if (!ActorComponentMesh) { return; }
 	RewindStates.Add(FRewindStateInfoStruct(ActorComponentMesh->GetComponentLocation(),
 											ActorComponentMesh->GetComponentRotation().Quaternion(),
 											ActorComponentMesh->GetComponentVelocity(),
@@ -92,6 +98,8 @@ void URewindComponent::Rewind()
 {
 	//dont rewind if currently rewinding
 	if (RewindTimeline.IsPlaying()){return;}
+	//dont rewind if mesh is no longer available
+	if (!ActorComponentMesh) { return; }
 
 	//initialize to false before starting
 	bShouldRewindStop = false;
@@ -186,6 +194,7 @@ void URewindComponent::FreezeTime()
 	//stop simulating physics
 	if (bActorSimulatePhysics)
 	{
+		if (!ActorComponentMesh) { return; }
 		ActorComponentMesh->SetSimulatePhysics(false);
 	}
 
@@ -207,6 +216,7 @@ void URewindComponent::UnFreezeTime()
 	//turn on physics
 	if (bActorSimulatePhysics)
 	{
+		if (!ActorComponentMesh) { return; }
 		ActorComponentMesh->SetSimulatePhysics(true);
 		ActorComponentMesh->SetPhysicsLinearVelocity(RewindStates.Last().Velocity);
 		ActorComponentMesh->SetPhysicsAngularVelocityInDegrees(RewindStates.Last().AngularVelocity);
@@ -241,8 +251,8 @@ void URewindComponent::RewindTimelineUpdate(float value)
 	{
 		return;
 	}
-	//Check if Timeline needs to stop early, wait till close to a stored Frame
-	if (bShouldRewindStop && FMath::Fractional(currentPosition)<DeltaRecordTime)
+	//Check if Timeline needs to stop early, wait till close to a stored Frame. Also stop if mesh is no longer valid
+	if ((bShouldRewindStop && FMath::Fractional(currentPosition)<DeltaRecordTime) || !ActorComponentMesh)
 	{
 		RewindTimeline.Stop();
 		RewindTimelineInterrupted(currentPosition);
@@ -293,6 +303,7 @@ Sets location and turns collision on, restarts physics if they were enabled, and
 */
 void URewindComponent::RewindTimelineRestartMesh()
 {
+	if (!ActorComponentMesh) { return; }
 	//SetLocationAndRotation
 	ActorComponentMesh->SetWorldLocationAndRotation(RewindStates.Last().Location, RewindStates.Last().Rotation);
 
