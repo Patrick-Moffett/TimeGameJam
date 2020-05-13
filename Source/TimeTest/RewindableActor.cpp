@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Particles\ParticleSystemComponent.h"
 #include "RewindableActor.h"
 
 
@@ -16,6 +16,10 @@ ARewindableActor::ARewindableActor()
 
 	//create rewind component and set mesh
 	RewindComponent = CreateDefaultSubobject<URewindComponent>(FName("RewindComponent"));
+
+	FrozenParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("FrozenParticleSystem"));
+	FrozenParticleSystem->SetupAttachment(StaticMeshComponent);
+	FrozenParticleSystem->bAutoActivate = false;
 }
 
 // Called when the game starts or when spawned

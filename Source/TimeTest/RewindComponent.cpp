@@ -5,6 +5,7 @@
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h" 
 #include "TimeTestCharacter.h"
+#include "Particles\ParticleSystemComponent.h"
 #include "GameFramework/PlayerController.h" 
 #include "TimerManager.h"
 
@@ -53,6 +54,8 @@ void URewindComponent::BeginPlay()
 			bActorSimulatePhysics = true;
 		}
 	}
+
+	FrozenParticleSystem = GetOwner()->FindComponentByClass<UParticleSystemComponent>();
 
 	//Setup Timer To Record States
 	GetWorld()->GetTimerManager().SetTimer(
@@ -199,6 +202,11 @@ void URewindComponent::FreezeTime()
 		ActorComponentMesh->SetSimulatePhysics(false);
 	}
 
+	if (FrozenParticleSystem)
+	{
+		FrozenParticleSystem->Activate();
+	}
+
 	//set bool to true
 	bIsActorFrozen = true;
 }
@@ -221,6 +229,12 @@ void URewindComponent::UnFreezeTime()
 		ActorComponentMesh->SetSimulatePhysics(true);
 		ActorComponentMesh->SetPhysicsLinearVelocity(RewindStates.Last().Velocity);
 		ActorComponentMesh->SetPhysicsAngularVelocityInDegrees(RewindStates.Last().AngularVelocity);
+	}
+
+	if (FrozenParticleSystem)
+	{
+		FrozenParticleSystem->ResetParticles();
+		FrozenParticleSystem->Deactivate();
 	}
 	//set bool to false
 	bIsActorFrozen = false;
