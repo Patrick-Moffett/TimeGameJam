@@ -28,7 +28,7 @@ public:
 	class URewindComponent* RewindComponent;
 
 	UPROPERTY(VisibleDefaultsOnly)
-	UParticleSystemComponent* FrozenParticleSystem;
+	class UParticleSystemComponent* FrozenParticleSystem;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -55,6 +55,12 @@ public:
 	UFUNCTION()
 	void SetMeshReference(UStaticMeshComponent* StaticMesh);
 
+	UPROPERTY(VisibleAnywhere)
+	class UCurveFloat* TimeCurve;
+
+//	UPROPERTY(VisibleAnywhere)
+//	class UCurveFloat* Curve;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -68,14 +74,14 @@ protected:
 	UFUNCTION()
 	void RewindTimelineInterrupted(float interruptedFrame);
 
+
 	UPROPERTY()
-	UParticleSystemComponent *FrozenParticleSystem = nullptr;
+	UParticleSystemComponent *FrozenParticleSystem;
 
 	UPROPERTY()
 	FTimeline RewindTimeline;
 	
-	UPROPERTY()
-	UCurveFloat *Curve;
+
 
 	UPROPERTY()
 	FOnTimelineFloat TimelineUpdateFunction;
