@@ -68,6 +68,9 @@ protected:
 	UFUNCTION()
 	void RewindTimelineInterrupted(float interruptedFrame);
 
+	UPROPERTY(EditDefaultsOnly, Category = ParticleEffect)
+	UParticleSystemComponent *ParticleSystem = nullptr;
+
 	UPROPERTY()
 	FTimeline RewindTimeline;
 	

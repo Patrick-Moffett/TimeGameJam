@@ -55,11 +55,14 @@ void UGrabber::Grab()
 
 	if (ActorHit)
 	{
+		//check if hit actor is a rewind actor
 		auto RewindActor = Cast<ARewindableActor>(ActorHit);
 		if (RewindActor)
 		{
+			//if it is turn physics on so we can grab it
 			RewindActor->StaticMeshComponent->SetSimulatePhysics(true);
 		}
+		//grab component
 		PhysicsHandle->GrabComponentAtLocationWithRotation
 		(
 			ComponentToGrab,
@@ -67,6 +70,7 @@ void UGrabber::Grab()
 			GetPlayersReach(),
 			FRotator (0.f, 0.f, 0.f)
 		);
+		//turn of collisions with player while holding actor
 		ActorHit->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	}
 }
@@ -75,20 +79,28 @@ void UGrabber::Grab()
 void UGrabber::Release()
 {
 	if (!PhysicsHandle) { return; }
+	//check we are holding a component
 	auto grabbedComponent = PhysicsHandle->GetGrabbedComponent();
 	if (grabbedComponent)
 	{
+		//turn collisions with player back on
 		auto HeldActor = grabbedComponent->GetOwner();
 		HeldActor->FindComponentByClass<UStaticMeshComponent>()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+
+		//check if actor is a rewind actor
 		auto RewindActor = Cast<ARewindableActor>(HeldActor);
 		if (RewindActor && RewindActor->RewindComponent->bIsActorFrozen)
 		{
+			//if it is, and it is currently frozen, turn physics off
 			RewindActor->StaticMeshComponent->SetSimulatePhysics(false);
 		}
 		PhysicsHandle->ReleaseComponent();
 	}
 }
 
+/*switch between grab and release, based on whether we are holding a component or not
+-used to allow one input press to both grab and release
+-to use push and release bind directly to grab and release*/
 void UGrabber::ToggleGrab()
 {
 	if (!PhysicsHandle) { return; }
@@ -113,6 +125,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(GetPlayersReach());
+		
 	}
 }
 

@@ -12,6 +12,7 @@ ARewindableActor::ARewindableActor()
 
 	//create static Meash
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
+	SetRootComponent(StaticMeshComponent);
 
 	//create rewind component and set mesh
 	RewindComponent = CreateDefaultSubobject<URewindComponent>(FName("RewindComponent"));
