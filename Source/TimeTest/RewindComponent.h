@@ -58,9 +58,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UCurveFloat* TimeCurve;
 
-//	UPROPERTY(VisibleAnywhere)
-//	class UCurveFloat* Curve;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
