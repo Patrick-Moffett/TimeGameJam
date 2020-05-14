@@ -5,6 +5,7 @@
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h" 
 #include "TimeTestCharacter.h"
+#include "Particles\ParticleSystemComponent.h"
 #include "GameFramework/PlayerController.h" 
 #include "TimerManager.h"
 
@@ -18,11 +19,10 @@ URewindComponent::URewindComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	//Setup Curve
-	Curve = CreateDefaultSubobject<UCurveFloat>(FName("CurveFloat"));
-	Curve->FloatCurve.AddKey(0.0f, 0.0f);
-	Curve->FloatCurve.AddKey(1.0f, 1.0f);
+	TimeCurve = CreateDefaultSubobject<UCurveFloat>(FName("CurveFloat"));
 
-
+	TimeCurve->FloatCurve.AddKey(0.0f, 0.0f);
+	TimeCurve->FloatCurve.AddKey(1.0f, 1.0f);
 
 }
 
@@ -32,11 +32,13 @@ void URewindComponent::BeginPlay()
 	Super::BeginPlay();
 
 
+
+
 	//Setup Timeline Component
 	RewindTimeline.SetTimelineLength(1.0f);
 	TimelineUpdateFunction.BindUFunction(this, FName("RewindTimelineUpdate"));
 	TimelineEndedFunction.BindUFunction(this, FName("RewindTimelineFinished"));
-	RewindTimeline.AddInterpFloat(Curve, TimelineUpdateFunction);
+	RewindTimeline.AddInterpFloat(TimeCurve, TimelineUpdateFunction);
 	RewindTimeline.SetTimelineFinishedFunc(TimelineEndedFunction);
 
 	//Setup ActorMesh
@@ -53,6 +55,8 @@ void URewindComponent::BeginPlay()
 			bActorSimulatePhysics = true;
 		}
 	}
+
+	FrozenParticleSystem = GetOwner()->FindComponentByClass<UParticleSystemComponent>();
 
 	//Setup Timer To Record States
 	GetWorld()->GetTimerManager().SetTimer(
@@ -199,6 +203,11 @@ void URewindComponent::FreezeTime()
 		ActorComponentMesh->SetSimulatePhysics(false);
 	}
 
+	if (FrozenParticleSystem)
+	{
+		FrozenParticleSystem->Activate();
+	}
+
 	//set bool to true
 	bIsActorFrozen = true;
 }
@@ -221,6 +230,12 @@ void URewindComponent::UnFreezeTime()
 		ActorComponentMesh->SetSimulatePhysics(true);
 		ActorComponentMesh->SetPhysicsLinearVelocity(RewindStates.Last().Velocity);
 		ActorComponentMesh->SetPhysicsAngularVelocityInDegrees(RewindStates.Last().AngularVelocity);
+	}
+
+	if (FrozenParticleSystem)
+	{
+		FrozenParticleSystem->ResetParticles();
+		FrozenParticleSystem->Deactivate();
 	}
 	//set bool to false
 	bIsActorFrozen = false;

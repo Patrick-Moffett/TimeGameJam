@@ -121,8 +121,7 @@ void ATimeTestCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATimeTestCharacter::OnFire);
-	// Bind fire event
-	PlayerInputComponent->BindAction("FireFreeze", IE_Pressed, this, &ATimeTestCharacter::OnFireFreezeProjectile);
+
 
 	// Enable touchscreen input
 	EnableTouchscreenMovement(PlayerInputComponent);
@@ -142,11 +141,12 @@ void ATimeTestCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATimeTestCharacter::LookUpAtRate);
 
 	//bind time controls
-	PlayerInputComponent->BindAction("FreezeTime", IE_Pressed, this, &ATimeTestCharacter::OnToggleFreeze);
 	PlayerInputComponent->BindAction("BoostRewind", IE_Pressed, this, &ATimeTestCharacter::ToggleRewindSpeed);
 	PlayerInputComponent->BindAction("BoostRewind", IE_Released, this, &ATimeTestCharacter::ToggleRewindSpeed);
 	PlayerInputComponent->BindAction("Rewind", IE_Pressed, this, &ATimeTestCharacter::Rewind);
 	PlayerInputComponent->BindAction("Rewind", IE_Released, this, &ATimeTestCharacter::StopRewind);
+	// Bind fire freeze event
+	PlayerInputComponent->BindAction("FireFreeze", IE_Pressed, this, &ATimeTestCharacter::OnFireFreezeProjectile);
 
 }
 

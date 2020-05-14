@@ -55,6 +55,9 @@ public:
 	UFUNCTION()
 	void SetMeshReference(UStaticMeshComponent* StaticMesh);
 
+	UPROPERTY(VisibleAnywhere)
+	class UCurveFloat* TimeCurve;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -68,11 +71,14 @@ protected:
 	UFUNCTION()
 	void RewindTimelineInterrupted(float interruptedFrame);
 
+
+	UPROPERTY()
+	UParticleSystemComponent *FrozenParticleSystem;
+
 	UPROPERTY()
 	FTimeline RewindTimeline;
 	
-	UPROPERTY()
-	UCurveFloat *Curve;
+
 
 	UPROPERTY()
 	FOnTimelineFloat TimelineUpdateFunction;
@@ -93,9 +99,6 @@ protected:
 
 	UPROPERTY()
 	bool bIsRewindSpeedBoosted = false;
-
-	UPROPERTY()
-	bool bIsActorFrozen = false;
 
 	UPROPERTY()
 	bool bActorSimulatePhysics;
@@ -137,12 +140,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleFreezeTime();
 
-
-
 	UFUNCTION()
 	void RewindTimelineRestartMesh();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	UPROPERTY()
+	bool bIsActorFrozen = false;
 };
